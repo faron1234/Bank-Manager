@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ account.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="/static/cardFlav.webp" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/cardFlav.webp" type="image/x-icon">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .sortable {
+            cursor: pointer;
+        }
+        .sortable .arrow {
+            margin-left: 5px;
+        }
+        .arrow.asc:before {
+            content: '▲';
+        }
+        .arrow.desc:before {
+            content: '▼';
+        }
+    </style>
+</head>
+<body>
+<header class="container full-width">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename=account.image_path) }}" alt="Bank Card" class="bank-card">
+    </div>
+    <div class="header-center">
+        <h1>{{ account.name }}</h1>
+    </div>
+    <div class="header-right">
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li>
+                    <a href="#">Categories</a>
+                    <ul class="dropdown">
+                        {% for category, count in categories %}
+                        <li>
+                            <a href="{{ url_for('category', account_name=account.name, category_name=category) }}">{{ category }} ({{ count }})</a>
+                        </li>
+                        {% endfor %}
+                        <li>
+                            <button id="new-category-button" onclick="showCategoryInput()">+ New Category</button>
+                            <form id="new-category-form" class="hidden" onsubmit="submitNewCategory(event)">
+                                <input type="text" id="new-category-input" placeholder="Enter category name" required>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container stats-container" id="stats-container">
+    {% set stats = account.viewedTransactions %}
+    {% include 'transaction_stats.html' %}
+    <input type="text" id="search-input" placeholder="Search transactions..." style="margin-left: 10px;" onclick="event.stopPropagation();">
+</div>
+
+<div class="container accounts-container">
+    <table>
+        <thead>
+            <tr>
+                <th class="sortable" data-sort="1" data-direction="{{ 'desc' if sort_by != '1' else next_sort_direction }}">
+                    Date
+                    {% if sort_by == '1' %}
+                    <span class="arrow {{ sort_direction }}"></span>
+                    {% endif %}
+                </th>
+                <th class="sortable" data-sort="2" data-direction="{{ 'asc' if sort_by != '2' else next_sort_direction }}">
+                    Description
+                    {% if sort_by == '2' %}
+                    <span class="arrow {{ sort_direction }}"></span>
+                    {% endif %}
+                </th>
+                <th>Before</th>
+                <th class="sortable" data-sort="3" data-direction="{{ 'desc' if sort_by != '3' else next_sort_direction }}">
+                    Amount
+                    {% if sort_by == '3' %}
+                    <span class="arrow {{ sort_direction }}"></span>
+                    {% endif %}
+                </th>
+                <th>After</th>
+            </tr>
+        </thead>
+        <tbody id="transactions-body">
+            {% set transactions = account.viewedTransactions.transactions %}
+            {% include 'transactions_table_rows.html' %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+   function showCategoryInput() {
+       document.getElementById("new-category-button").style.display = "none";
+       document.getElementById("new-category-form").classList.remove("hidden");
+   }
+
+   function submitNewCategory(event) {
+       event.preventDefault();
+       let category = document.getElementById("new-category-input").value;
+       if (!category) return;
+
+       $.ajax({
+           url: "{{ url_for('create_category') }}",
+           method: "POST",
+           contentType: "application/json",
+           data: JSON.stringify({
+               account: "{{ account.name }}",
+               category: category
+           }),
+           success: function(response) {
+               location.reload();
+           },
+           error: function(response) {
+               alert("Error creating category: " + response.responseText);
+           }
+       });
+   }
+
+   function searchTransactions(query) {
+       $.ajax({
+           url: "{{ url_for('search_transactions', account_name=account.name) }}",
+           method: "GET",
+           data: { query: query },
+           success: function(response) {
+               $('#transactions-body').html(response.transactions);
+               $('#stats-container').html(response.stats);
+           },
+           error: function(xhr, status, error) {
+               alert("Error searching transactions: " + error);
+           }
+       });
+   }
+
+   $(document).ready(function() {
+       $('.sortable').click(function() {
+           const sortValue = $(this).data('sort');
+           let sortDirection = $(this).data('direction');
+           const urlParams = new URLSearchParams(window.location.search);
+           urlParams.set('sort_by', sortValue);
+           urlParams.set('sort_direction', sortDirection);
+           window.location.search = urlParams.toString();
+       });
+
+       $('#search-input').on('keyup', function() {
+           const query = $(this).val();
+           searchTransactions(query);
+       });
+   });
+</script>
+</body>
+</html>

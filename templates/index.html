@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link rel="icon" href="/static/cardFlav.webp" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/cardFlav.webp" type="image/x-icon">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<header class="container full-width">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='cards-logo.png') }}" alt="Bank Card" class="bank-card">
+    </div>
+    <div class="header-center">
+        <h1>Account Manager</h1>
+    </div>
+    <div class="header-right">
+        <nav>
+            <ul>
+                <li>
+                    <a href="#">Accounts</a>
+                    <ul class="dropdown">
+                        {% for account in accounts %}
+                        <li>
+                            <a href="{{ url_for('account', name=account.name) }}">{{ account }}</a>
+                        </li>
+                        {% endfor %}
+                        <li>
+                            <button id="new-account-button" onclick="showAccountInput()">+ New Account</button>
+                            <form id="new-account-form" class="hidden" onsubmit="submitNewAccount(event)">
+                                <input type="text" id="new-account-input" placeholder="Enter account name" required>
+                                <div class="dropdown-bank">
+                                    <select name="bank" id="bank">
+                                        <option value="" disabled selected>Select Bank</option>
+                                        {% for bank in banks %}
+                                        <option value="{{ bank.name }}">{{ bank.display_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container accounts-container">
+    <h2>Accounts</h2>
+    <div class="accounts-list" id="accounts-list">
+        {% for account_name, account in accounts.items() %}
+        <form action="{{ url_for('account', name=account_name) }}" method="GET">
+            <button type="submit" class="account-item" data-id="{{ account_name }}">
+                <div class="account-card">
+                    <h3>{{ account_name }}</h3>
+                    <img src="{{ url_for('static', filename=account.image_path) }}" alt="Bank Card" class="bank-card">
+                </div>
+            </button>
+        </form>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function showAccountInput() {
+        document.getElementById("new-account-button").style.display = "none";
+        document.getElementById("new-account-form").classList.remove("hidden");
+    }
+
+    function submitNewAccount(event) {
+        event.preventDefault();
+        let name = document.getElementById("new-account-input").value;
+        let bank = document.getElementById("bank").value;
+
+        if (!name || !bank) return;
+
+        $.ajax({
+            url: "{{ url_for('create_account') }}",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                account_name: name,
+                bank: bank
+            }),
+            success: function(response) {
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert("Error creating account: " + error);
+            }
+        });
+    }
+
+    // Initialize SortableJS
+    new Sortable(document.getElementById('accounts-list'), {
+        animation: 150,
+        onEnd: function (evt) {
+            const itemEl = evt.item;  // dragged HTMLElement
+            const newIndex = evt.newIndex;  // new index within parent
+            const oldIndex = evt.oldIndex;  // old index within parent
+
+            console.log(`Moved ${itemEl.dataset.id} from ${oldIndex} to ${newIndex}`);
+        },
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ account.name }} - {{ category }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" href="/static/cardFlav.webp" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/cardFlav.webp" type="image/x-icon">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<header class="container full-width">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename=account.image_path) }}" alt="Bank Card" class="bank-card">
+    </div>
+    <div class="header-center">
+        <h1>{{ account.name }} ({{category}})</h1>
+    </div>
+    <div class="header-right">
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Home</a></li>
+                <li><a href="{{ url_for('account', name=account.name) }}">Account</a></li>
+                <li>
+                    <a href="#">Categories</a>
+                    <ul class="dropdown">
+                        {% for category, count in categories %}
+                        <li>
+                            <a href="{{ url_for('category', account_name=account.name, category_name=category) }}">{{ category }} ({{ count }})</a>
+                        </li>
+                        {% endfor %}
+                        <li>
+                            <button id="new-category-button" onclick="showCategoryInput()">+ New Category</button>
+                            <form id="new-category-form" class="hidden" onsubmit="submitNewCategory(event)">
+                                <input type="text" id="new-category-input" placeholder="Enter category name" required>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="container accounts-container">
+    <form id="keyword-filter-form" action="{{ url_for('category', account_name=account.name, category_name=category) }}" method="POST">
+        <label for="keywords">Keywords:</label>
+        <input type="text" id="keywords" name="keywords" required>
+        <button type="submit">Apply</button>
+    </form>
+
+    {% if transactions.transactions %}
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Before</th>
+                <th>Amount</th>
+                <th>After</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions.transactions %}
+            <tr>
+                <td>{{ transaction.date }}</td>
+                <td>{{ transaction.desc }}</td>
+                <td>{{ transaction.balBefore | currency }}</td>
+                <td>{{ transaction.amount | currency }}</td>
+                <td>{{ transaction.balAfter | currency }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Total In: {{ transactions.inSum | currency }}</td>
+                <td colspan="2">Total Out: {{ transactions.outSum | currency }}</td>
+            </tr>
+        </tfoot>
+    </table>
+    {% else %}
+    <p>No transactions found in this category.</p>
+    {% endif %}
+</div>
+</body>
+</html>
+
+<script>
+function showCategoryInput() {
+    document.getElementById("new-category-button").style.display = "none";
+    document.getElementById("new-category-form").classList.remove("hidden");
+}
+
+function submitNewCategory(event) {
+    event.preventDefault();
+    let category = document.getElementById("new-category-input").value;
+    if (!category) return;
+
+    $.ajax({
+        url: "{{ url_for('create_category') }}",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            account: "{{ account.name }}",
+            category: category
+        }),
+        success: function(response) {
+            alert("Category created successfully!");
+            location.reload();
+        },
+        error: function(response) {
+            alert("Error creating category.");
+        }
+    });
+}
+
+// Function to handle keyword filter form submission
+document.getElementById("keyword-filter-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+    let keywords = document.getElementById("keywords").value.trim();
+    if (!keywords) return;
+
+    $.ajax({
+        url: "{{ url_for('add_keywords') }}",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify({
+            account: "{{ account.name }}",
+            category: "{{ category }}",
+            keywords: keywords
+        }),
+        success: function(response) {
+            alert("Keywords added successfully!");
+            location.reload();  // Reload the page to reflect filtered transactions
+        },
+        error: function(response) {
+            alert("Error adding keywords.");
+        }
+    });
+});
+</script>

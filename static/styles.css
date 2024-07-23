@@ -1,0 +1,186 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
+
+.full-width {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+header {
+    background: #333;
+    color: #fff;
+    padding: 10px 0;
+    border-bottom: #0779e4 3px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header-left img.bank-card {
+    max-width: 80%;
+    height: auto;
+}
+
+.header-center {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.header-right {
+    width: 20%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 20px;
+}
+
+header ul {
+    padding: 0;
+    list-style: none;
+    display: flex;
+    margin: 0;
+}
+
+header li {
+    display: inline;
+    padding: 0 20px;
+}
+
+header a {
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+header ul ul.dropdown {
+    display: none;
+    position: absolute;
+    background: #333;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+header ul li:hover ul.dropdown {
+    display: block;
+}
+
+header ul ul.dropdown li {
+    display: block;
+    padding: 10px;
+}
+
+header ul ul.dropdown a {
+    color: #fff;
+}
+
+.accounts-container {
+    margin-top: 20px;
+}
+
+.accounts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.account-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 200px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.account-card {
+    padding: 10px;
+    border: 2px solid #333;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    margin-bottom: 10px;
+    height: 132px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.account-card h3 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    margin: 0;
+}
+
+.bank-card {
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+    object-fit: contain;
+    margin-top: 10px;
+}
+
+.account-item a {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+}
+
+/* Form styles */
+.add-account-form {
+    padding: 10px;
+}
+
+.add-account-form input,
+.add-account-form button {
+    padding: 8px;
+    font-size: 16px;
+    margin-right: 5px;
+}
+
+.add-account-form button {
+    background: #333;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.add-account-form button:hover {
+    background: #444;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background: #333;
+    color: #fff;
+}

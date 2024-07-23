@@ -1,0 +1,9 @@
+{% for transaction in transactions %}
+<tr>
+    <td>{{ transaction.date.strftime("%d %b %Y") }}</td>
+    <td>{{ transaction.desc }}</td>
+    <td>{{ transaction.balBefore | currency }}</td>
+    <td>{{ transaction.amount | currency }}</td>
+    <td>{{ transaction.balAfter | currency }}</td>
+</tr>
+{% endfor %}
