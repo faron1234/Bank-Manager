@@ -1,6 +1,5 @@
 import csv
 from datetime import datetime
-
 from ..static import Sorts
 
 

@@ -30,7 +30,7 @@
                     <ul class="dropdown">
                         {% for account in accounts %}
                         <li>
-                            <a href="{{ url_for('account', name=account.name) }}">{{ account }}</a>
+                            <a href="{{ url_for('app.account', name=account.name) }}">{{ account }}</a>
                         </li>
                         {% endfor %}
                         <li>
@@ -58,7 +58,7 @@
     <h2>Accounts</h2>
     <div class="accounts-list" id="accounts-list">
         {% for account_name, account in accounts.items() %}
-        <form action="{{ url_for('account', name=account_name) }}" method="GET">
+        <form action="{{ url_for('app.account', name=account_name) }}" method="GET">
             <button type="submit" class="account-item" data-id="{{ account_name }}">
                 <div class="account-card">
                     <h3>{{ account_name }}</h3>
@@ -84,7 +84,7 @@
         if (!name || !bank) return;
 
         $.ajax({
-            url: "{{ url_for('create_account') }}",
+            url: "{{ url_for('app.create_account') }}",
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({

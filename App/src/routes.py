@@ -1,36 +1,23 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify
 from .models import BankAccounts, Category, TransactionList
 from ..static import Sorts
 
-# import logging
+bp = Blueprint('app', __name__)
 
-app = Flask(__name__)
 bank_accounts = BankAccounts()
 
 # Example data
 bank_accounts.add_account('flexOne', 'nationwide')
-bank_accounts.get_account('flexOne').openTransactions('statements/Statement Download 2024-Jul-10 14-57-29.csv')
-
-
-# Flask template filter for displaying currency
-@app.template_filter('currency')
-def currency_filter(value):
-    return f"£{value:,.2f}"
-
-
-# Flask template filter for absolute value
-@app.template_filter('abs')
-def abs_filter(value):
-    return abs(value)
+bank_accounts.get_account('flexOne').openTransactions('App/statements/Statement Download 2024-Jul-10 14-57-29.csv')
 
 
 # Flask route for index page
-@app.route('/')
+@bp.route('/')
 def index():
-    return render_template('../templates/index.html', accounts=bank_accounts.all_accounts(), banks=bank_accounts.banks())
+    return render_template('index.html', accounts=bank_accounts.all_accounts(), banks=bank_accounts.banks())
 
 
-@app.route('/account/<name>', methods=['GET'])
+@bp.route('/account/<name>', methods=['GET'])
 def account(name):
     account = bank_accounts.get_account(name)
     if not account:
@@ -64,7 +51,7 @@ def account(name):
     return render_template('account.html', account=account, categories=categories, stats=stats, sort_by=sort_by, sort_direction=sort_direction, next_sort_direction=next_sort_direction)
 
 
-@app.route('/create_account', methods=['POST'])
+@bp.route('/create_account', methods=['POST'])
 def create_account():
     data = request.get_json()
     account_name = data.get('account_name', '').strip()
@@ -82,7 +69,7 @@ def create_account():
     return jsonify({"message": "Account created", "account": account_name})
 
 
-@app.route('/create_category', methods=['POST'])
+@bp.route('/create_category', methods=['POST'])
 def create_category():
     data = request.get_json()
     account_name = data.get('account')
@@ -100,7 +87,7 @@ def create_category():
     return jsonify({"message": "Category created", "category": category_name})
 
 
-@app.route('/add_keywords', methods=['POST'])
+@bp.route('/add_keywords', methods=['POST'])
 def add_keywords():
     data = request.json
     account_name = data.get('account')
@@ -123,7 +110,7 @@ def add_keywords():
     return jsonify({"message": "Keywords added", "keywords": keywords})
 
 
-@app.route('/search_transactions/<account_name>', methods=['GET'])
+@bp.route('/search_transactions/<account_name>', methods=['GET'])
 def search_transactions(account_name):
     query = request.args.get('query', '').strip().lower().split()
     account = bank_accounts.get_account(account_name)
@@ -141,7 +128,7 @@ def search_transactions(account_name):
     })
 
 
-@app.route('/category/<account_name>/<category_name>', methods=['GET', 'POST'])
+@bp.route('/category/<account_name>/<category_name>', methods=['GET', 'POST'])
 def category(account_name, category_name):
     account = bank_accounts.get_account(account_name)
     if not account:
@@ -157,8 +144,3 @@ def category(account_name, category_name):
         transactions = TransactionList()
     transactions.getSums()
     return render_template('category.html', account=account, category=category_name, transactions=transactions)
-
-
-# Run the Flask application
-if __name__ == '__main__':
-    app.run(debug=True)
