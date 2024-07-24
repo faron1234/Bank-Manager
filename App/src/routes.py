@@ -27,7 +27,7 @@ def abs_filter(value):
 # Flask route for index page
 @app.route('/')
 def index():
-    return render_template('index.html', accounts=bank_accounts.all_accounts(), banks=bank_accounts.banks())
+    return render_template('../templates/index.html', accounts=bank_accounts.all_accounts(), banks=bank_accounts.banks())
 
 
 @app.route('/account/<name>', methods=['GET'])
