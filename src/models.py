@@ -1,8 +1,7 @@
 import csv
 from datetime import datetime
 
-from static import static
-from static.static import Sorts
+from ..static import Sorts
 
 
 def parseCurrency(value):
@@ -73,7 +72,6 @@ class TransactionList:
         if keywords:
             subset = [transaction for transaction in subset if
                       any(keyword.lower() in transaction.desc.lower() for keyword in keywords)]
-
         if start_date:
             subset = [transaction for transaction in subset if transaction.date >= start_date]
 

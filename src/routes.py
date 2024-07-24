@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify
-from src.models import BankAccounts, Category, TransactionList, static
+from .models import BankAccounts, Category, TransactionList
+from ..static import Sorts
+
 # import logging
 
 app = Flask(__name__)
@@ -45,7 +47,7 @@ def account(name):
             next_sort_direction = 'asc'
         account.allTransactions.sort(int(sort_by), sort_direction)
     else:
-        account.allTransactions.sort(static.Sorts.dateSort, sort_direction)
+        account.allTransactions.sort(Sorts.dateSort, sort_direction)
         next_sort_direction = 'desc'
 
     categories = [(category.name, len(category.transactions.transactions)) for category in account.categories]
