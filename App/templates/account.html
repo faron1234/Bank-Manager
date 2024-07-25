@@ -107,6 +107,6 @@
    const searchTransactionsUrl = "{{ url_for('search_transactions.search_transactions', account_name=account.name) }}";
    const accountName = "{{ account.name }}";
 </script>
-<script src="{{ url_for('static', filename='app.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
