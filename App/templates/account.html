@@ -58,6 +58,7 @@
     </div>
 </header>
 
+{% if account.hasTransactions() %}
 <div class="container stats-container" id="stats-container">
     {% set stats = account.viewedTransactions %}
     {% include 'transaction_stats.html' %}
@@ -96,6 +97,10 @@
         </tbody>
     </table>
 </div>
+{% else %}
+<p>No transactions available</p>
+<p>Please upload a bank statement: </p>
+{% endif %}
 
 <script>
    function showCategoryInput() {
