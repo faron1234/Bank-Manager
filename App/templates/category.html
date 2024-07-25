@@ -24,14 +24,14 @@
     <div class="header-right">
         <nav>
             <ul>
-                <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('account', name=account.name) }}">Account</a></li>
+                <li><a href="{{ url_for('index.index') }}">Home</a></li>
+                <li><a href="{{ url_for('account.account', name=account.name) }}">Account</a></li>
                 <li>
                     <a href="#">Categories</a>
                     <ul class="dropdown">
                         {% for category, count in categories %}
                         <li>
-                            <a href="{{ url_for('category', account_name=account.name, category_name=category) }}">{{ category }} ({{ count }})</a>
+                            <a href="{{ url_for('category.category', account_name=account.name, category_name=category) }}">{{ category }} ({{ count }})</a>
                         </li>
                         {% endfor %}
                         <li>
@@ -48,7 +48,7 @@
 </header>
 
 <div class="container accounts-container">
-    <form id="keyword-filter-form" action="{{ url_for('category', account_name=account.name, category_name=category) }}" method="POST">
+    <form id="keyword-filter-form" action="{{ url_for('category.category', account_name=account.name, category_name=category) }}" method="POST">
         <label for="keywords">Keywords:</label>
         <input type="text" id="keywords" name="keywords" required>
         <button type="submit">Apply</button>
@@ -102,7 +102,7 @@ function submitNewCategory(event) {
     if (!category) return;
 
     $.ajax({
-        url: "{{ url_for('create_category') }}",
+        url: "{{ url_for('create_category.create_category') }}",
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify({
@@ -126,7 +126,7 @@ document.getElementById("keyword-filter-form").addEventListener("submit", functi
     if (!keywords) return;
 
     $.ajax({
-        url: "{{ url_for('add_keywords') }}",
+        url: "{{ url_for('add_keywords.add_keywords') }}",
         method: "POST",
         contentType: "application/json",
         data: JSON.stringify({

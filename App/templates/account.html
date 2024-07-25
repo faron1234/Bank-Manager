@@ -36,13 +36,13 @@
     <div class="header-right">
         <nav>
             <ul>
-                <li><a href="{{ url_for('app.index') }}">Home</a></li>
+                <li><a href="{{ url_for('index.index') }}">Home</a></li>
                 <li>
                     <a href="#">Categories</a>
                     <ul class="dropdown">
                         {% for category, count in categories %}
                         <li>
-                            <a href="{{ url_for('category', account_name=account.name, category_name=category) }}">{{ category }} ({{ count }})</a>
+                            <a href="{{ url_for('category.category', account_name=account.name, category_name=category) }}">{{ category }} ({{ count }})</a>
                         </li>
                         {% endfor %}
                         <li>
@@ -109,7 +109,7 @@
        if (!category) return;
 
        $.ajax({
-           url: "{{ url_for('app.create_category') }}",
+           url: "{{ url_for('create_category.create_category') }}",
            method: "POST",
            contentType: "application/json",
            data: JSON.stringify({
@@ -127,7 +127,7 @@
 
    function searchTransactions(query) {
        $.ajax({
-           url: "{{ url_for('app.search_transactions', account_name=account.name) }}",
+           url: "{{ url_for('search_transactions.search_transactions', account_name=account.name) }}",
            method: "GET",
            data: { query: query },
            success: function(response) {
