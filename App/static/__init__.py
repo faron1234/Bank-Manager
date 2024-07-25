@@ -1,3 +1,3 @@
-from .static import Sorts
+from .static import Sorts, parseCurrency
 
-__all__ = ['Sorts']
+__all__ = ['Sorts', 'parseCurrency']
